@@ -1,7 +1,10 @@
 import express from "express"
 import { Question } from "./models/Question.mjs"
+import cors from "cors"
 
 const app = express()
+
+app.use(cors())
 
 const questions: Question[] = [
     new Question("abmdfndfm", ["7","4","6","5"], 1),
