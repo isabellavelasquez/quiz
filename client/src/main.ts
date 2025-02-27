@@ -1,35 +1,53 @@
 import { Question } from "./models/Questions";
 import { getQuestions } from "./services/getQuestions";
 
-const createHTML = (question: Question) => {
-    const questionContainer = document.createElement("div")
-    const answersContainer = document.createElement("ul")
+let questions: Question[] = []
+let currentQuestionIndex = questions[0]
 
+const checkAnswer = (question: Question, answer: number) => {
+    if(answer === question.correctAnswer) {
+        console.log("Correct")
+    }
+    else {
+        console.log("Incorrect")
+    }
+}
+
+const displayQuestion = (question: Question) => {
+    const questionContainer = document.getElementById("question-container")
+    if (!questionContainer) {
+        console.error("Error: Question container not found.");
+        return;
+    }
+    questionContainer.innerHTML = ""    
     questionContainer.innerHTML = question.question
 
-    document.getElementById("questions-container")?.append(questionContainer, answersContainer)
-
+    const answersUl = document.getElementById("answers-ul")
     if (!question.answers || !Array.isArray(question.answers)) {
         console.error("Error: Answers did not return a valid array.");
         return;
     }
-    question.answers.forEach(answer => {
+    if(!answersUl) {
+        console.error("Error: Answers ul not found.");
+        return;
+    }
+    answersUl.innerHTML = ""  
+    question.answers.forEach((answer, index) => {
         const answerLi = document.createElement("li")
-        answerLi.innerHTML = answer
-        answersContainer.append(answerLi)
+        const answerBtn = document.createElement("button")
+        answerBtn.innerHTML = answer
+        answersUl.append(answerLi)
+        answerLi.append(answerBtn)
+        answerBtn.addEventListener("click", () => {
+            checkAnswer(question, index)
+        })
     });
 }
 
 document.getElementById("button")?.addEventListener("click", async() => {
-    const questions = await getQuestions()
-    console.log(questions)
-    if (!questions || !Array.isArray(questions)) {
-        console.error("Error: getQuestions() did not return a valid array.");
-        return;
-    }
+    questions = await getQuestions()
     
     questions.forEach(question => {
-        createHTML(question);
-        console.log(question);
+        displayQuestion(question);
     });
 })
