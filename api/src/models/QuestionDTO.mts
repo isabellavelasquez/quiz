@@ -1,4 +1,4 @@
-export class Question {
+export class QuestionDTO {
     correctAnswer: number
     constructor(
         public question: string, 
