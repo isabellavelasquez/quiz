@@ -1,53 +1,41 @@
-import { Request, Response, text } from "express"
-import { QuestionDTO } from "../models/QuestionDTO.mjs"
-import Question from "../models/QuestionSchema.mjs"
+import { Request, Response } from "express"
+import { QuestionDto } from "../models/QuestionDto.mjs"
+import Question from "../models/questionSchema.mjs";
+import { InferSchemaType } from "mongoose";
+import { AnswerDto } from "../models/AnswerDto.mjs";
 
-// const questions: QuestionDTO[] = [
-//     new QuestionDTO("What color is the sky?", ["Blue","Red","Yellow","Black"], 1),
-//     new QuestionDTO("What color is matcha?", ["Green", "Blue", "Red", "Yellow"], 2)
-// ]
+type QuestionType = InferSchemaType<typeof Question.schema>
 
-export const getAllQuestions = async (req: Request, res: Response) => {
-    try {
-        const questions = await Question.find();
-        const questionsDTO: QuestionDTO[] = questions.map((q) => {
-            return new QuestionDTO(q.question!, q.answers, q.id, q.img!);
-        }) 
-        res.status(200).json(questionsDTO)
-    } catch (error) {
-        res.status(500).send(error)
-    }
+const convertDbQuestionToDto = (dbQuestion: QuestionType): QuestionDto => {
+    return {
+        id: dbQuestion.id, 
+        question: dbQuestion.question, 
+        answers: dbQuestion.answers.map(
+            (a) => ({ id: a.id, text: a.text, isCorrect: a.isCorrect} satisfies AnswerDto)
+        ),
+    } satisfies QuestionDto
 }
 
-// export const getQuestionById = (req: Request, res: Response) => {
-//     const { id } = req.params    
-//     try {
-//         if(!id) {
-//             res.status(400).json({status: "Question not found"})
-//         } else {
-//             res.status(200).json(questions)
-//             console.log(id)
-//         }
-//     } catch (error) {
-//         res.status(500).send(error)
-//     }
-// }
+export const getQuestions = async (req: Request, res: Response) => {
+    const questions = await Question.find()
+    const questionsDtos: QuestionDto[] = questions.map((q) => convertDbQuestionToDto(q))
+    return questionsDtos.filter(
+        (q) => q.question.indexOf(q.toString()) >= 0
+    )
+}
 
-export const addQuestion = async (req: Request, res: Response) => {
-    const { id, question, answers } = req.body
+export const addQuestion = async (question: QuestionDto): Promise<QuestionDto> => {
+     
+    const newQuestion: QuestionType = await Question.create({
+        id: Date.now(),
+        question: question.question,
+        answers: question.answers
+    }) satisfies QuestionType;
 
-    try {
-        if (!id || !question || !answers) {
-            res.status(400).json({error: "ALl fields are required"})
-        } else {
-            const newQuestion = await Question.create({
-                id,
-                question,
-                answers,
-            })
-            res.status(201).json(newQuestion)
-        }        
-    } catch (error) {
-        console.error(error);
-    }
+    const convertedQuestion = convertDbQuestionToDto(newQuestion)
+    return convertedQuestion
+}
+
+export const deleteQuestion = async (id: number) => {
+    await Question.deleteOne({id: id})
 }

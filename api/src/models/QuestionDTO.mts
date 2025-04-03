@@ -1,11 +1,9 @@
-export class QuestionDTO {
-    correctAnswer: number
-    constructor(
-        public question: string, 
-        public answers: string[],
-        public id: number,
-        public img?: string
-    ) {
-        this.correctAnswer = 0;
-    }
-}
+import { AnswerDto } from "./AnswerDto.mjs"
+
+export type QuestionDto = {
+    id: number,
+    question: string, 
+    answers: AnswerDto[],
+    img?: string
+};
+

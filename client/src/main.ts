@@ -1,53 +1,41 @@
-import { Question } from "./models/Questions";
-import { getQuestions } from "./services/getQuestions";
+import { addQuestionForm, displayQuestion } from "./components/htmlHelpers";
+import { Question } from "./models/Question";
+import { getQuestions } from "./services/questionServices";
 
 let questions: Question[] = []
-let currentQuestionIndex = questions[0]
 
-const checkAnswer = (question: Question, answer: number) => {
-    if(answer === question.correctAnswer) {
-        console.log("Correct")
-    }
-    else {
-        console.log("Incorrect")
-    }
-}
-
-const displayQuestion = (question: Question) => {
-    const questionContainer = document.getElementById("question-container")
-    if (!questionContainer) {
-        console.error("Error: Question container not found.");
-        return;
-    }
-    questionContainer.innerHTML = ""    
-    questionContainer.innerHTML = question.question
-
-    const answersUl = document.getElementById("answers-ul")
-    if (!question.answers || !Array.isArray(question.answers)) {
-        console.error("Error: Answers did not return a valid array.");
-        return;
-    }
-    if(!answersUl) {
-        console.error("Error: Answers ul not found.");
-        return;
-    }
-    answersUl.innerHTML = ""  
-    question.answers.forEach((answer, index) => {
-        const answerLi = document.createElement("li")
-        const answerBtn = document.createElement("button")
-        answerBtn.innerHTML = answer
-        answersUl.append(answerLi)
-        answerLi.append(answerBtn)
-        answerBtn.addEventListener("click", () => {
-            checkAnswer(question, index)
-        })
-    });
-}
-
-document.getElementById("button")?.addEventListener("click", async() => {
-    questions = await getQuestions()
+document.getElementById("questions-list-button")?.addEventListener("click", async() => {
+  console.log("Fetching questions")
+  questions = await getQuestions()
+  console.log(questions)
+  const ul = document.createElement("ul")
     
-    questions.forEach(question => {
-        displayQuestion(question);
-    });
+  if (!questions || questions.length === 0) {
+    console.error("No questions available")
+    return
+  }
+  questions.forEach(question => {
+    const li = document.createElement("li")
+    li.innerHTML = question.question
+    const deleteButton = document.createElement("button")
+    ul.append(li, deleteButton)
+  })
 })
+
+document.getElementById("start-quiz-button")?.addEventListener("click", async() => {
+  console.log("Fetching questions")
+  questions = await getQuestions()
+  console.log(questions)
+    
+  if (!questions || questions.length === 0) {
+    console.error("No questions available")
+    return
+  }
+  questions.forEach(question => {
+      displayQuestion(question)
+  });
+})
+
+document.getElementById("add-question-button")?.addEventListener("click", () => {
+  addQuestionForm();
+});

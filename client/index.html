@@ -5,14 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module" src="/src/main.ts" defer></script>
+    <link rel="stylesheet" href="src/style.css">
     <title>Vite + TS</title>
   </head>
   <body>
-    <button id="button">Click here to generate a question</button>
-    <div id="questions-container">
+    <div id="questions-list">
+      <button id="questions-list-button">See all questions</button>
+    </div>
+    <div id="add-question-container">
+      <button id="add-question-button">Add question to quiz</button>
+      <form id="add-question-form">
+      </form>
+    </div>
+    <div id="quiz-contianer">
+      <button id="start-quiz-button">Start quiz</button>
+      <div id="questions-container">
       <h1 id="question-container"></h1>
       <ul id="answers-ul"></ul>
-
     </div>
   </body>
 </html>

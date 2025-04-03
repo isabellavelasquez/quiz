@@ -1,14 +1,13 @@
 {
-  "name": "valorant-quiz",
+  "name": "crud-api-isabellavelasquez",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsx watch src/index.mts",
-    "build": "tsc"
+    "dev": "npx tsx watch src/index.mts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Isabella Velasquez",
   "license": "ISC",
   "description": "",
   "dependencies": {
