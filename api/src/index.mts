@@ -12,8 +12,12 @@ if(!dbUrl) throw new Error("no MONGO_URL in env file")
 
 const app = express()
 
-app.use(cors())
-app.use(json());
+app.use(cors({ credentials: true, origin: true }))
+app.use(json())
+app.use(cookieParser())
+app.use("/register", registerRouter)
+app.use("/login", loginRouter)
+app.use(auth)
 
 app.use("/question", questionRoutes)
 

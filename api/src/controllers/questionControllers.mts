@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import { QuestionDto } from "../models/QuestionDto.mjs"
-import Question from "../models/questionSchema.mjs";
+import { QuestionDto } from "../models/QuestionDto.mjs";
+import Question from "../models/QuestionSchema.mjs";
 import { InferSchemaType } from "mongoose";
 import { AnswerDto } from "../models/AnswerDto.mjs";
 
@@ -16,12 +16,10 @@ const convertDbQuestionToDto = (dbQuestion: QuestionType): QuestionDto => {
     } satisfies QuestionDto
 }
 
-export const getQuestions = async (req: Request, res: Response) => {
+export const getQuestions = async () => {
     const questions = await Question.find()
     const questionsDtos: QuestionDto[] = questions.map((q) => convertDbQuestionToDto(q))
-    return questionsDtos.filter(
-        (q) => q.question.indexOf(q.toString()) >= 0
-    )
+    return questionsDtos
 }
 
 export const addQuestion = async (question: QuestionDto): Promise<QuestionDto> => {
@@ -34,6 +32,21 @@ export const addQuestion = async (question: QuestionDto): Promise<QuestionDto> =
 
     const convertedQuestion = convertDbQuestionToDto(newQuestion)
     return convertedQuestion
+}
+
+export const updateQuestion = async (id: Number, question: QuestionDto) => {
+    const updatedQuestion = await Question.findOneAndUpdate(
+        { id: Number(question.id) },
+        { 
+            question: question.question,
+            answers: question.answers
+        },
+        { new: true }
+    );
+
+    if (!updatedQuestion) throw Error("Question not found with id " + id);
+    
+    return convertDbQuestionToDto(updatedQuestion);    
 }
 
 export const deleteQuestion = async (id: number) => {

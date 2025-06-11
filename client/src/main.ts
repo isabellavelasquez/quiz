@@ -1,26 +1,9 @@
-import { addQuestionForm, displayQuestion } from "./components/htmlHelpers";
+import { addQuestionForm } from "./adminHtmlHelpers/addQuestionForm";
 import { Question } from "./models/Question";
 import { getQuestions } from "./services/questionServices";
+import { displayQuestion } from "./userHtmlHelpers/displayQuestion";
 
 let questions: Question[] = []
-
-document.getElementById("questions-list-button")?.addEventListener("click", async() => {
-  console.log("Fetching questions")
-  questions = await getQuestions()
-  console.log(questions)
-  const ul = document.createElement("ul")
-    
-  if (!questions || questions.length === 0) {
-    console.error("No questions available")
-    return
-  }
-  questions.forEach(question => {
-    const li = document.createElement("li")
-    li.innerHTML = question.question
-    const deleteButton = document.createElement("button")
-    ul.append(li, deleteButton)
-  })
-})
 
 document.getElementById("start-quiz-button")?.addEventListener("click", async() => {
   console.log("Fetching questions")
